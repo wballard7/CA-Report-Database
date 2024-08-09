@@ -57,7 +57,7 @@ app.get('/users', (req, res) => {
       .catch((err) =>
         res.status(404).json({
           message:
-            'The data you are looking for could not be found. Please try again',
+            'The unit you are looking for could not be found.',
         }),
       );
   });
@@ -69,7 +69,7 @@ app.get('/reports', (req, res) => {
       .catch((err) =>
         res.status(404).json({
           message:
-            'The reports you are looking for could not be found. Please try again',
+            'The reports you are looking for could not be found.',
         }),
       );
   });
@@ -82,13 +82,13 @@ app.get('/reports/:id', (req, res) => {
       .catch((err) =>
         res.status(404).json({
           message:
-            'The report you are looking for could not be found. Please try again',
+            'The report you are looking for could not be found.',
         }),
       );
   });
 
 app.get('/reports/search', (req, res) => {
-  const { query } = req.query; // Assuming you send search terms as query parameters
+  const { query } = req.query; 
 
   knex('reports')
     .where('report_body', 'like', `%${query}%`)
@@ -98,7 +98,7 @@ app.get('/reports/search', (req, res) => {
     .catch((err) =>
       res.status(404).json({
         message:
-          'The reports you are looking for could not be found. Please try again',
+          'The reports you are looking for could not be found.',
       }),
     );
 });
@@ -121,7 +121,54 @@ app.post('/reports', async (req, res) => {
     res.status(201).json({ id: insertedId + 'added successfully'});
   } catch (err) {
     res.status(500).json({
-      message: 'An error occurred while creating the account. Please try again later.',
+      message: 'Account Creation error.',
+    });
+  }
+});
+
+app.put('/reports/:id', async (req, res) => {
+  const { id } = req.params;
+  const { report_type, event_dtg, lat_long, reporting_unit_id, report_body, disposition, additional_poi } = req.body;
+
+  try {
+    const updatedRows = await knex('reports')
+      .where({ id })
+      .update({
+        report_type,
+        event_dtg,
+        lat_long,
+        reporting_unit_id,
+        report_body,
+        disposition,
+        additional_poi
+      });
+
+    if (updatedRows > 0) {
+      res.status(200).json({ message: 'Report updated successfully.' });
+    } else {
+      res.status(404).json({ message: 'Report not found.' });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: 'An error occurred while updating the report.',
+    });
+  }
+});
+
+app.delete('/reports/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedRows = await knex('reports')
+      .where({ id })
+      .del();
+    if (deletedRows > 0) {
+      res.status(200).json({ message: 'Report deleted successfully.' });
+    } else {
+      res.status(404).json({ message: 'Report not found.' });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: 'Unable to delete the report at this time.',
     });
   }
 });
@@ -133,15 +180,10 @@ app.get('/garrison', (req, res) => {
     .catch((err) =>
       res.status(404).json({
         message:
-          'The data you are looking for could not be found. Please try again',
+          'The data you are looking for could not be found.',
       }),
     );
 });
-
-
-
-
-
 
 
 

@@ -3,11 +3,10 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { ReportContext } from './ReportContext';
 
-// Example icon colors; adjust as needed
 const iconColors = {
-  'High': 'red',
-  'Medium': 'orange',
-  'Low': 'green',
+  'red': 'red',
+  'yellow': 'yellow',
+  'green': 'green',
   'Unknown': 'gray'
 };
 
@@ -19,7 +18,7 @@ const MapboxMap = () => {
   const { filteredReports } = useContext(ReportContext);
 
   useEffect(() => {
-    if (map.current) return; // Ensure map is not initialized again
+    if (map.current) return; 
 
     map.current = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -34,19 +33,17 @@ const MapboxMap = () => {
   }, []);
 
   useEffect(() => {
-    if (!map.current) return; // Ensure map is initialized
+    if (!map.current) return; 
 
     console.log('Filtered reports:', filteredReports);
 
     filteredReports.forEach(report => {
       if (report.lat_long) {
         const [lat, lng] = report.lat_long.split(',').map(Number);
-        console.log(`Adding marker at lat: ${lat}, lng: ${lng}`); // Debugging
+        console.log(`Adding marker at lat: ${lat}, lng: ${lng}`); 
 
-        // Determine the color based on the disposition
-        const color = iconColors[report.disposition] || 'gray'; // Default color
+        const color = iconColors[report.disposition] || 'gray'; 
 
-        // Create a custom marker with color
         const markerElement = document.createElement('div');
         markerElement.style.backgroundColor = color;
         markerElement.style.width = '30px';
@@ -55,7 +52,7 @@ const MapboxMap = () => {
         markerElement.style.boxShadow = '0 0 2px rgba(0, 0, 0, 0.5)';
         
         new mapboxgl.Marker(markerElement)
-          .setLngLat([lng, lat]) // Ensure lng, lat order
+          .setLngLat([lng, lat]) 
           .setPopup(new mapboxgl.Popup().setHTML(`
             <h3>Type: ${report.report_type}</h3>
             <p>Disposition: ${report.disposition}</p>
